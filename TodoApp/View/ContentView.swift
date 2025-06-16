@@ -13,6 +13,8 @@ struct ContentView: View {
 	
 	// MARK: - properties
 	
+	@Environment(\.managedObjectContext) var managedObjectContext
+	
 	@State private var showingAddTodoView: Bool = false
 	
 	
@@ -33,6 +35,7 @@ struct ContentView: View {
 					} // Button
 					.sheet(isPresented: $showingAddTodoView) {
 						AddTodoView()
+							.environment(\.managedObjectContext, managedObjectContext)
 					}
 			)
 		} // NavigationView

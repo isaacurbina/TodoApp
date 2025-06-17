@@ -14,7 +14,7 @@ struct PersistenceController {
 	static let preview: PersistenceController = {
 		let result = PersistenceController(inMemory: true)
 		let viewContext = result.container.viewContext
-		for _ in 0..<10 {
+		for _ in 0..<1 {
 			let newItem = Todo(context: viewContext)
 			newItem.name = "Todo"
 			newItem.priority = "Normal"

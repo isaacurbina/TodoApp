@@ -19,6 +19,7 @@ struct ContentView: View {
 	
 	@State private var showingAddTodoView: Bool = false
 	@State private var animatingButton: Bool = false
+	@State private var showingSettingsView: Bool = false
 	
 	
 	// MARK: - functions
@@ -62,12 +63,13 @@ struct ContentView: View {
 					leading: EditButton(),
 					trailing:
 						Button(action: {
-							showingAddTodoView.toggle()
+							showingSettingsView.toggle()
 						}) {
-							Image(systemName: "plus")
+							Image(systemName: "paintbrush")
+								.imageScale(.large)
 						} // Button
-						.sheet(isPresented: $showingAddTodoView) {
-							AddTodoView()
+						.sheet(isPresented: $showingSettingsView) {
+							SettingsView()
 								.environment(\.managedObjectContext, managedObjectContext)
 						}
 				)

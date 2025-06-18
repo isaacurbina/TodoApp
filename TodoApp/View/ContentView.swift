@@ -18,6 +18,7 @@ struct ContentView: View {
 	@FetchRequest(entity: Todo.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Todo.name, ascending: true)]) var todos: FetchedResults<Todo>
 	
 	@State private var showingAddTodoView: Bool = false
+	@State private var animatingButton: Bool = false
 	
 	
 	// MARK: - functions
@@ -76,6 +77,45 @@ struct ContentView: View {
 				}
 				
 			} // ZStack
+			.sheet(isPresented: $showingAddTodoView) {
+				AddTodoView()
+					.environment(\.managedObjectContext, managedObjectContext)
+			}
+			.overlay(
+				ZStack {
+					Group {
+						Circle()
+							.fill(.blue)
+							.opacity(animatingButton ? 0.2 : 0)
+							.scaleEffect(animatingButton ? 1 : 0)
+							.frame(width: 68, height: 68, alignment: .center)
+						
+						Circle()
+							.fill(.blue)
+							.opacity(animatingButton ? 0.15 : 0)
+							.scaleEffect(animatingButton ? 1 : 0)
+							.frame(width: 88, height: 88, alignment: .center)
+					} // Group
+					.animation(.easeInOut(duration: 2).repeatForever(autoreverses: true))
+					
+					Button(action: {
+						showingAddTodoView.toggle()
+					}) {
+						Image(systemName: "plus.circle.fill")
+							.resizable()
+							.scaledToFit()
+							.background(Circle().fill(Color("ColorBase")))
+							.frame(width: 48, height: 48, alignment: .center)
+					} // Button
+					.onAppear {
+						animatingButton.toggle()
+					}
+					
+				} // ZStack
+					.padding(.bottom, 15)
+					.padding(.trailing, 20)
+				, alignment: .bottomTrailing
+			)
 			
 		} // NavigationView
 	}

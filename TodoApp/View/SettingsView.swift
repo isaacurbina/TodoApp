@@ -13,6 +13,7 @@ struct SettingsView: View {
 	// MARK: - properties
 	
 	@Environment(\.presentationMode) var presentationMode
+	@EnvironmentObject var iconSettings: IconNames
 	
 	
 	// MARK: - body
@@ -25,6 +26,69 @@ struct SettingsView: View {
 				// MARK: - form
 				
 				Form {
+					
+					
+					// MARK: - section 1
+					
+					Section(header: Text("Choose the app icon")) {
+						
+						Picker(
+							selection: $iconSettings.currentIndex,
+							label:
+								HStack {
+									ZStack {
+										RoundedRectangle(cornerRadius: 8, style: .continuous)
+											.strokeBorder(style: .primary, lineWidth: 2)
+										
+										Image(systemName: "paintbrush")
+											.font(.system(size: 28, weight: .regular, design: .default))
+									} // ZStack
+									.frame(width: 44, height: 44)
+									
+									Text("App Icons".uppercased())
+										.fontWeight(.bold)
+										.foregroundColor(.primary)
+								} // HStack
+						) {
+							
+							ForEach(0..<iconSettings.iconNames.count) { index in
+								
+								HStack {
+									
+									Image(uiImage: UIImage(named: self.iconSettings.iconNames[index] ?? "Blue") ?? UIImage())
+										.renderingMode(.original)
+										.resizable()
+										.scaledToFit()
+										.frame(width: 44, height: 44)
+										.cornerRadius(8)
+									
+									Spacer()
+										.frame(width: 8)
+									
+									Text(iconSettings.iconNames[index] ?? "Blue")
+										.frame(alignment: .leading)
+									
+								} //HStack
+								
+							} // ForEach
+							
+						} // Picker
+						.pickerStyle(.inline)
+						.onReceive([iconSettings.currentIndex].publisher.first()) {(value) in
+							let index = iconSettings.iconNames.firstIndex(of: UIApplication.shared.alternateIconName) ?? 0
+							if index != value {
+								UIApplication.shared.setAlternateIconName(iconSettings.iconNames[value]) { error in
+									if let error = error {
+										print(error.localizedDescription)
+									} else {
+										print("Success! You have changed the app icon.")
+									}
+								}
+							}
+						}
+						
+					} // Section
+					.padding(.vertical, 3)
 					
 					
 					// MARK: - section 3
@@ -90,4 +154,5 @@ struct SettingsView: View {
 
 #Preview {
 	SettingsView()
+		.environmentObject(IconNames())
 }

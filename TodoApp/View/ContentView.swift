@@ -25,7 +25,7 @@ struct ContentView: View {
 	
 	// MARK: - theme
 	
-	@ObservedObject var theme = ThemeSettings()
+	@ObservedObject private var theme = ThemeSettings.shared
 	private var themes: [Theme] = themeData
 	
 	// MARK: - functions

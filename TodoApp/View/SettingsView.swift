@@ -16,6 +16,13 @@ struct SettingsView: View {
 	@EnvironmentObject var iconSettings: IconNames
 	
 	
+	// MARK: - theme
+	
+	private let themes: [Theme] = themeData
+	@ObservedObject var theme = ThemeSettings()
+	@State private var isThemeChanged: Bool = false
+	
+	
 	// MARK: - body
 	
 	var body: some View {
@@ -91,6 +98,44 @@ struct SettingsView: View {
 					.padding(.vertical, 3)
 					
 					
+					// MARK: - section 2
+					
+					Section(
+						header:
+							HStack {
+								Text("Choose the app theme")
+								Image(systemName: "circle.fill")
+									.resizable(width: 10, height: 10)
+									.foregroundColor(themes[self.theme.themeSettings].themeColor)
+							} // HStack
+					) {
+						
+						List {
+							ForEach(themes, id: \.id) { item in
+								
+								Button(action: {
+									self.theme.themeSettings = item.id
+									UserDefaults.standard.set(self.theme.themeSettings, forKey: "Theme")
+									isThemeChanged.toggle()
+								}) {
+									HStack {
+										Image(systemName: "circle.fill")
+											.foregroundColor(item.themeColor)
+										Text(item.themeName)
+									} // HStack
+								} // Button
+								.accentColor(.primary)
+								
+							} // ForEach
+						} // List
+						
+					} // Section
+					.padding(.vertical, 3)
+					.alert(isPresented: $isThemeChanged) {
+						Alert(title: Text("Success"), message: Text("App has been changed to the \(themes[theme.themeSettings].themeName). Now close and restart it!"), dismissButton: .default("OK"))
+					}
+					
+					
 					// MARK: - section 3
 					
 					Section(header: Text("Follow us on social media")) {
@@ -146,6 +191,8 @@ struct SettingsView: View {
 			.edgesIgnoringSafeArea(.all)
 			
 		} // NavigationView
+		.accentColor(themes[self.theme.themeSettings].themeColor)
+		.navigationViewStyle(StackNavigationViewStyle())
 	}
 }
 

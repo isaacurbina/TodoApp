@@ -23,6 +23,11 @@ struct ContentView: View {
 	@State private var showingSettingsView: Bool = false
 	
 	
+	// MARK: - theme
+	
+	@ObservedObject var theme = ThemeSettings()
+	private var themes: [Theme] = themeData
+	
 	// MARK: - functions
 	
 	private func deleteTodo(at offsets: IndexSet) {
@@ -37,6 +42,18 @@ struct ContentView: View {
 		}
 	}
 	
+	private func colorize(priority: String) -> Color {
+		switch priority {
+		case "High":
+			return .pink
+		case "Normal":
+			return .green
+		case "Low":
+			return .blue
+		default: return .gray
+		}
+	}
+	
 	
 	// MARK: - body
 	
@@ -47,13 +64,28 @@ struct ContentView: View {
 					ForEach(todos, id: \.self){ todo in
 						
 						HStack {
+							
+							Circle()
+								.frame(width: 12, height: 12, alignment: .center)
+								.foregroundColor(colorize(priority: todo.priority ?? "Normal"))
+							
 							Text(todo.name ?? "Unknown")
+								.fontWeight(.semibold)
 							
 							Spacer()
 							
 							Text(todo.priority ?? "Unknown")
+								.font(.footnote)
+								.foregroundColor(Color(UIColor.systemGray2))
+								.padding(3)
+								.frame(minWidth: 62)
+								.overlay(
+									Capsule()
+										.stroke(Color(UIColor.systemGray2), lineWidth: 0.75)
+								)
 							
 						} // HStack
+						.padding(.vertical, 10)
 						
 					} // ForEach
 					.onDelete(perform: deleteTodo)
@@ -61,7 +93,8 @@ struct ContentView: View {
 				} // List
 				.navigationBarTitle("Todo", displayMode: .inline)
 				.navigationBarItems(
-					leading: EditButton(),
+					leading: EditButton()
+						.accentColor(themes[self.theme.themeSettings].themeColor),
 					trailing:
 						Button(action: {
 							showingSettingsView.toggle()
@@ -69,6 +102,7 @@ struct ContentView: View {
 							Image(systemName: "paintbrush")
 								.imageScale(.large)
 						} // Button
+						.accentColor(themes[self.theme.themeSettings].themeColor)
 						.sheet(isPresented: $showingSettingsView) {
 							SettingsView()
 								.environment(\.managedObjectContext, managedObjectContext)
@@ -89,13 +123,13 @@ struct ContentView: View {
 				ZStack {
 					Group {
 						Circle()
-							.fill(.blue)
+							.fill(themes[self.theme.themeSettings].themeColor)
 							.opacity(animatingButton ? 0.2 : 0)
 							.scaleEffect(animatingButton ? 1 : 0)
 							.frame(width: 68, height: 68, alignment: .center)
 						
 						Circle()
-							.fill(.blue)
+							.fill(themes[self.theme.themeSettings].themeColor)
 							.opacity(animatingButton ? 0.15 : 0)
 							.scaleEffect(animatingButton ? 1 : 0)
 							.frame(width: 88, height: 88, alignment: .center)
@@ -111,6 +145,7 @@ struct ContentView: View {
 							.background(Circle().fill(Color("ColorBase")))
 							.frame(width: 48, height: 48, alignment: .center)
 					} // Button
+					.accentColor(themes[self.theme.themeSettings].themeColor)
 					.onAppear {
 						animatingButton.toggle()
 					}
@@ -122,6 +157,7 @@ struct ContentView: View {
 			)
 			
 		} // NavigationView
+		.navigationViewStyle(StackNavigationViewStyle())
 	}
 }
 

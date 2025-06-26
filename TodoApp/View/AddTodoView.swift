@@ -25,6 +25,12 @@ struct AddTodoView: View {
 	private let priorities = ["High", "Normal", "Low"]
 	
 	
+	// MARK: - theme
+	
+	@ObservedObject var theme = ThemeSettings()
+	private var themes: [Theme] = themeData
+	
+	
 	// MARK: - body
 	
 	var body: some View {
@@ -81,7 +87,7 @@ struct AddTodoView: View {
 							.font(.system(size: 24, weight: .bold, design: .default))
 							.padding()
 							.frame(minWidth: 0, maxWidth: .infinity)
-							.background(.blue)
+							.background(themes[self.theme.themeSettings].themeColor)
 							.cornerRadius(9)
 							.foregroundColor(.white)
 					} // Button
@@ -107,6 +113,7 @@ struct AddTodoView: View {
 			}
 			
 		} // NavigationView
+		.accentColor(themes[self.theme.themeSettings].themeColor)
 	}
 }
 
